@@ -1,0 +1,10 @@
+services:
+  error404-ds-bot:
+    build: .
+    container_name: error404-ds-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
