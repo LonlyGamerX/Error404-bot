@@ -1,0 +1,8 @@
+# build the image if any changes are made to code
+docker build -t error404-ds-bot . 
+
+# Pull the new image
+docker compose pull
+
+#Run this command on first startup after build
+docker compose up -d
