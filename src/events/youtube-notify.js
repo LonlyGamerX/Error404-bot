@@ -74,7 +74,7 @@ export async function execute(bot) {
         const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
         const channel = bot.channels.cache.get(DISCORD_CHANNEL_ID);
 
-        if (channel && channel.type === ChannelType.GuildText) {
+        if (channel && channel.type === ChannelType.GuildAnnouncement) {
           if (videoId === lastVideoId) {
             incrementDuplicateCount();
             if (getDuplicateCount() === 288) {
@@ -109,7 +109,9 @@ export async function execute(bot) {
           );
         } else {
           console.error(
-            color.red("Discord channel not found or is not a text channel.")
+            color.red(
+              "Discord channel not found or is not a text/announcement channel."
+            )
           );
         }
       }
