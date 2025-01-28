@@ -118,6 +118,6 @@ export async function execute(bot) {
     }
   };
 
-  // Check for new videos every 10 minutes
-  setInterval(checkForNewVideos, 10 * 60 * 1000);
+  // Check for new videos every 15 minutes
+  setInterval(checkForNewVideos, 15 * 60 * 1000);
 }
