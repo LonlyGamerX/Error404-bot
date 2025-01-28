@@ -26,6 +26,7 @@ export async function execute(bot) {
 
   let YOUTUBE_CHANNEL_ID = null;
   let lastVideoId = null;
+  let lastPostTime = null; // Track the time the last video was posted
 
   // Resolve the channel ID from the YouTube handle
   const resolveChannelId = async () => {
@@ -63,6 +64,18 @@ export async function execute(bot) {
   // Function to check for new videos
   const checkForNewVideos = async () => {
     try {
+      const now = Date.now();
+
+      // If we posted within the last 24 hours, skip this check
+      if (lastPostTime && now - lastPostTime < 24 * 60 * 60 * 1000) {
+        console.log(
+          color.yellow(
+            `Skipping YouTube API check. Last video posted within 24 hours.`
+          )
+        );
+        return;
+      }
+
       const response = await axios.get(
         `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${YOUTUBE_CHANNEL_ID}&part=snippet,id&order=date&maxResults=1`
       );
@@ -74,7 +87,11 @@ export async function execute(bot) {
         const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
         const channel = bot.channels.cache.get(DISCORD_CHANNEL_ID);
 
-        if (channel && channel.type === ChannelType.GuildAnnouncement) {
+        if (
+          channel &&
+          (channel.type === ChannelType.GuildText ||
+            channel.type === ChannelType.GuildAnnouncement)
+        ) {
           if (videoId === lastVideoId) {
             incrementDuplicateCount();
             if (getDuplicateCount() === 288) {
@@ -99,6 +116,7 @@ export async function execute(bot) {
           resetDuplicateCount();
 
           lastVideoId = videoId;
+          lastPostTime = now; // Update last post time
 
           // Send the old-style message
           await channel.send(
