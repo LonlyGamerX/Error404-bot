@@ -1,7 +1,7 @@
 services:
   error404-ds-bot:
     build: .
-    container_name: error404-ds-bot
+    container_name: error404-bot
     restart: unless-stopped
     env_file:
       - .env
