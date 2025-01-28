@@ -1,5 +1,5 @@
 # build the image if any changes are made to code
-docker build -t error404-ds-bot . 
+docker build -t error404-bot . 
 
 # Pull the new image
 docker compose pull
