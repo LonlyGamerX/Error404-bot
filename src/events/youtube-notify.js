@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ChannelType, EmbedBuilder } from "discord.js";
 import chalk from "chalk";
+import { ChannelType } from "discord.js";
 import {
   getDuplicateCount,
   incrementDuplicateCount,
@@ -72,9 +72,8 @@ export async function execute(bot) {
         const videoId = latestVideo.id.videoId;
         const videoTitle = latestVideo.snippet.title;
         const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-        const videoThumbnail = latestVideo.snippet.thumbnails.high.url;
-
         const channel = bot.channels.cache.get(DISCORD_CHANNEL_ID);
+
         if (channel && channel.type === ChannelType.GuildText) {
           if (videoId === lastVideoId) {
             incrementDuplicateCount();
@@ -101,25 +100,10 @@ export async function execute(bot) {
 
           lastVideoId = videoId;
 
-          // Send the notification
-          const embed = new EmbedBuilder()
-            .setColor("#814aff")
-            .setTitle(videoTitle)
-            .setURL(videoUrl)
-            .setImage(videoThumbnail)
-            .setAuthor({
-              name: "YouTube",
-              iconURL:
-                "https://www.youtube.com/s/desktop/43320cfa/img/favicon_32x32.png",
-            })
-            .setDescription(`**New video uploaded by ${YOUTUBE_HANDLE}!**`)
-            .setFooter({
-              text: "Error 404 Network",
-              iconURL: bot.user.displayAvatarURL(),
-            })
-            .setTimestamp();
-
-          await channel.send({ content: `@everyone 🎥`, embeds: [embed] });
+          // Send the old-style message
+          await channel.send(
+            `@everyone 🎥 New video uploaded: **${videoTitle}**\nWatch it here: ${videoUrl}`
+          );
           console.log(
             color.blue(`Posted a new video notification for "${videoTitle}".`)
           );

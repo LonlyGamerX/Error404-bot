@@ -59,14 +59,14 @@ export async function execute(interaction) {
     .setTitle("📊 Status and Latency\n")
     .addFields(
       {
-        name: "\nLatency", // Left-side section
-        value: `• YouTube: ${youtubePing}\n• Database: ${databasePing}\n• Bot: ${botPing}ms`,
-        inline: true, // Makes it appear on the left
+        name: "\nAPI Status", // Right-side section
+        value: `• YouTube: ${youtubeStatus}\n• Database: ${databaseStatus}\n`,
+        // inline: true, // Makes it appear on the right
       },
       {
-        name: "znAPI Status", // Right-side section
-        value: `• YouTube: ${youtubeStatus}\n• Database: ${databaseStatus}\n`,
-        inline: true, // Makes it appear on the right
+        name: "\nLatency", // Left-side section
+        value: `• YouTube: ${youtubePing}\n• Database: ${databasePing}\n• Bot: ${botPing}ms\n`,
+        // inline: true, // Makes it appear on the left
       }
     )
     .setTimestamp();
