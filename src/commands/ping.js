@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import axios from "axios";
 import mysql from "mysql2/promise";
 import { config } from "dotenv";
@@ -71,5 +71,8 @@ export async function execute(interaction) {
     .setTimestamp();
 
   // Send the embedded message
-  await interaction.reply({ embeds: [embed], ephemeral: true });
+  await interaction.reply({
+    embeds: [embed],
+    flags: MessageFlags.Ephemeral,
+  });
 }
