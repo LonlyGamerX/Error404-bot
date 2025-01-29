@@ -42,6 +42,10 @@ export async function execute(bot) {
   // Attach the subscriber-role event
   subscriberRole(bot);
 
+  // Attach the ignore-error event to suppress unwanted errors
+  const ignoreError = await import("./ignore-error.js");
+  bot.on("error", ignoreError.execute);
+
   // Restrict commands to specific channel, roles, or developer
   const channelCommandId = process.env.channel_command_id;
   const specialRole1 = process.env.special_role_1;

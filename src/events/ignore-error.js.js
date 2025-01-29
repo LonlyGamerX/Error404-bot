@@ -2,12 +2,16 @@ export const name = "error";
 export const once = false;
 
 export async function execute(error) {
-  // Check for specific error codes to ignore
-  if (error?.code === 40060) {
-    // Suppress "Interaction has already been acknowledged" error
-    return;
+  const ignoredErrors = [
+    "InteractionAlreadyReplied",
+    "Unknown interaction",
+    "40060", // Interaction has already been acknowledged
+  ];
+
+  // Check if error message contains any ignored error
+  if (ignoredErrors.some((ignored) => error.message.includes(ignored))) {
+    return; // Do nothing, effectively suppressing it
   }
 
-  // Log other errors to the console
-  console.error("Unhandled Error:", error);
+  console.error("Unhandled Error:", error); // Log only other errors
 }
