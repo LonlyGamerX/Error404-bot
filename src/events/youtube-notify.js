@@ -27,6 +27,7 @@ export async function execute(bot) {
   let YOUTUBE_CHANNEL_ID = null;
   let lastVideoId = null;
   let lastPostTime = null; // Track the time the last video was posted
+  let checkInterval = 1.5 * 60 * 60 * 1000; // Default: 1 hour 30 minutes
 
   // Resolve the channel ID from the YouTube handle
   const resolveChannelId = async () => {
@@ -61,6 +62,17 @@ export async function execute(bot) {
     return;
   }
 
+  // Function to check if the video URL already exists in the last 10 messages
+  const isUrlInChannel = async (channel, videoUrl) => {
+    try {
+      const messages = await channel.messages.fetch({ limit: 10 });
+      return messages.some((message) => message.content.includes(videoUrl));
+    } catch (error) {
+      console.error(color.red("Error checking channel messages:", error));
+      return false;
+    }
+  };
+
   // Function to check for new videos
   const checkForNewVideos = async () => {
     try {
@@ -92,39 +104,41 @@ export async function execute(bot) {
           (channel.type === ChannelType.GuildText ||
             channel.type === ChannelType.GuildAnnouncement)
         ) {
-          if (videoId === lastVideoId) {
-            incrementDuplicateCount();
-            if (getDuplicateCount() === 288) {
-              console.log(
-                color.yellow(
-                  `Already posted video "${videoTitle}". Duplicate count: x288`
-                )
-              );
-              resetDuplicateCount();
-            }
+          // Check if the video URL already exists in the last 10 messages
+          const urlExists = await isUrlInChannel(channel, videoUrl);
+
+          if (urlExists) {
+            console.log(
+              color.yellow(`Video URL already exists in channel: ${videoUrl}`)
+            );
             return;
           }
 
           // If a new video is found
-          if (getDuplicateCount() > 0) {
+          if (videoId === lastVideoId) {
+            incrementDuplicateCount();
             console.log(
               color.yellow(
                 `Already posted video "${videoTitle}". Duplicate count: x${getDuplicateCount()}`
               )
             );
+            return;
           }
+
           resetDuplicateCount();
 
+          // Post the video URL to the channel
           lastVideoId = videoId;
           lastPostTime = now; // Update last post time
-
-          // Send the old-style message
           await channel.send(
             `@everyone 🎥 New video uploaded: **${videoTitle}**\nWatch it here: ${videoUrl}`
           );
           console.log(
             color.blue(`Posted a new video notification for "${videoTitle}".`)
           );
+
+          // Set cooldown to 24 hours after posting
+          checkInterval = 24 * 60 * 60 * 1000;
         } else {
           console.error(
             color.red(
@@ -132,12 +146,23 @@ export async function execute(bot) {
             )
           );
         }
+      } else {
+        console.log(color.yellow("No new videos found."));
       }
     } catch (error) {
       console.error(color.red("Error checking YouTube API:", error));
     }
   };
 
-  // Check for new videos every 15 minutes
-  setInterval(checkForNewVideos, 15 * 60 * 1000);
+  // Check for new videos initially
+  checkForNewVideos();
+
+  // Set dynamic interval for subsequent checks
+  setInterval(async () => {
+    await checkForNewVideos();
+    // Reset to default interval if no video is posted
+    if (!lastPostTime || Date.now() - lastPostTime >= 24 * 60 * 60 * 1000) {
+      checkInterval = 1.5 * 60 * 60 * 1000; // 1 hour 30 minutes
+    }
+  }, checkInterval);
 }
