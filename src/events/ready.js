@@ -42,20 +42,26 @@ export async function execute(bot) {
   // Attach the subscriber-role event
   subscriberRole(bot);
 
-  // Restrict commands to specific channel or roles
+  // Restrict commands to specific channel, roles, or developer
   const channelCommandId = process.env.channel_command_id;
   const specialRole1 = process.env.special_role_1;
   const specialRole2 = process.env.special_role_2;
+  const developerId = process.env.developer_id; // Developer ID from .env
 
   bot.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) return;
 
+    const userId = interaction.user.id; // Get the user ID
     const userRoles = interaction.member.roles.cache;
     const isSpecialRole =
       userRoles.has(specialRole1) || userRoles.has(specialRole2);
 
-    // Check if the interaction is in the correct channel or user has special roles
-    if (interaction.channel.id !== channelCommandId && !isSpecialRole) {
+    // Allow developer to bypass restrictions
+    if (
+      userId !== developerId &&
+      interaction.channel.id !== channelCommandId &&
+      !isSpecialRole
+    ) {
       await interaction.reply({
         content: `❌ Commands can only be used in the designated channel or by users with special roles.`,
         ephemeral: true,

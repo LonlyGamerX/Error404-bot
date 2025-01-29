@@ -21,7 +21,7 @@ export async function execute(interaction) {
       `https://www.googleapis.com/youtube/v3/search?key=${process.env.youtube_api_key}&part=snippet&q=test&maxResults=1`
     );
     youtubeStatus = "Online";
-    youtubePing = `${Date.now() - startTime}ms`;
+    youtubePing = `${Date.now() - startTime}ms`; // Round-trip latency to YouTube API
   } catch (error) {
     youtubeStatus = "Offline";
     youtubePing = "Error";
@@ -42,7 +42,7 @@ export async function execute(interaction) {
 
     await connection.ping(); // Test the database connection
     databaseStatus = "Online";
-    databasePing = `${Date.now() - dbStartTime}ms`;
+    databasePing = `${Date.now() - dbStartTime}ms`; // Round-trip latency to database
     await connection.end();
   } catch (error) {
     databaseStatus = "Offline";
@@ -50,8 +50,8 @@ export async function execute(interaction) {
     console.error("Database error:", error);
   }
 
-  // Calculate bot latency
-  const botPing = Date.now() - interaction.createdTimestamp;
+  // WebSocket latency (round-trip latency between Discord and the bot)
+  const websocketPing = interaction.client.ws.ping;
 
   // Create the embedded message
   const embed = new EmbedBuilder()
@@ -59,16 +59,15 @@ export async function execute(interaction) {
     .setTitle("📊 Status and Latency\n")
     .addFields(
       {
-        name: "\nAPI Status", // Right-side section
+        name: "API Status", // Right-side section
         value: `• YouTube: ${youtubeStatus}\n• Database: ${databaseStatus}\n`,
-        // inline: true, // Makes it appear on the right
       },
       {
-        name: "\nLatency", // Left-side section
-        value: `• YouTube: ${youtubePing}\n• Database: ${databasePing}\n• Bot: ${botPing}ms\n`,
-        // inline: true, // Makes it appear on the left
+        name: "Latency", // Left-side section
+        value: `• YouTube: ${youtubePing}\n• Database: ${databasePing}\n• Discord: ${websocketPing}ms\n`,
       }
     )
+    .setFooter({ text: "Ping command with WebSocket latency" })
     .setTimestamp();
 
   // Send the embedded message
