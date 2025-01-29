@@ -1,4 +1,4 @@
-import { ActivityType } from "discord.js";
+import { ActivityType, MessageFlags } from "discord.js";
 import chalk from "chalk";
 import { config } from "dotenv";
 import { execute as subscriberRole } from "./subscriber-role.js";
@@ -64,7 +64,7 @@ export async function execute(bot) {
     ) {
       await interaction.reply({
         content: `❌ Commands can only be used in the designated channel or by users with special roles.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -79,7 +79,7 @@ export async function execute(bot) {
       console.error(error);
       await interaction.reply({
         content: "❌ There was an error executing this command.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   });

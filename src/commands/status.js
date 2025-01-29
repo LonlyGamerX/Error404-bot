@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, MessageFlags } from "discord.js";
 import axios from "axios";
 import chalk from "chalk";
 
@@ -17,7 +17,7 @@ export async function execute(interaction) {
     await interaction.reply({
       content:
         "The YouTube API key or channel ID is not configured. Please check the bot settings.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -53,7 +53,7 @@ export async function execute(interaction) {
     await interaction.reply({
       content:
         "❌ There was an error fetching the latest video information. Please try again later.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, MessageFlags } from "discord.js";
 import { config } from "dotenv";
 import { addToSchedule } from "../data/scheduleData.js";
 
@@ -33,7 +33,7 @@ export async function execute(interaction) {
   if (!userRoles.has(roleId)) {
     await interaction.reply({
       content: "❌ You do not have permission to use this command.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -46,6 +46,6 @@ export async function execute(interaction) {
 
   await interaction.reply({
     content: `✅ The schedule has been updated:\n- **"${title}"** on ${date} at around ${time}.`,
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 }

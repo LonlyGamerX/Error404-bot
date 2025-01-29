@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { MessageFlags } from "discord.js";
 
 export const name = "interactionCreate";
 export const once = false;
@@ -24,7 +25,7 @@ export async function execute(interaction, bot) {
     );
     await interaction.reply({
       content: "There was an error while executing this command!",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

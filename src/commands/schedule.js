@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, MessageFlags } from "discord.js";
 import { getSchedule } from "../data/scheduleData.js";
 
 export const data = new SlashCommandBuilder()
@@ -22,6 +22,6 @@ export async function execute(interaction) {
 
   await interaction.reply({
     content: response,
-    ephemeral: false,
+    flags: MessageFlags.Ephemeral,
   });
 }
